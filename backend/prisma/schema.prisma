@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String @id @default(uuid())
+  email        String @unique
+  passwordHash String
+
+  refreshToken String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  searches SearchHistory[]
+}
+
+model SearchHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  latitude  Float
+  longitude Float
+  radius    Int
+  poiType   String
+  createdAt DateTime @default(now())
+
+  // The relation linking back to the User
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
