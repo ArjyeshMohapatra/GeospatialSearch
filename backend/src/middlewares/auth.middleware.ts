@@ -1,10 +1,6 @@
 import { type Request, type Response, type NextFunction } from 'express';
-import jwt , {type JwtPayload} from 'jsonwebtoken';
-
-// This extends the standard Express Request to include our custom userId
-export interface AuthRequest extends Request {
-    userId?: string;
-}
+import jwt, { type JwtPayload } from 'jsonwebtoken';
+import { type AuthRequest } from '../types/index.js';
 
 const secret = process.env["JWT_ACCESS_SECRET"];
 if (!secret) {

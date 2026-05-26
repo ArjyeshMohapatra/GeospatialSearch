@@ -1,12 +1,12 @@
 import "dotenv/config";
 import express, { type Express } from "express";
 import cors from 'cors';
+import { config } from "./config/env.js";
 import cookieParser from "cookie-parser";
-import authRoutes from './routes/auth.routes.js';
-import historyRoutes from './routes/history.routes.js'
+import { authRoutes, historyRoutes } from './routes/index.js';
 
 const app: Express = express();
-const port = process.env["PORT"] || 3000;
+const port = config.port;
 
 app.use(express.json());
 app.use(cookieParser());

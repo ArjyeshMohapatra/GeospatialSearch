@@ -1,6 +1,7 @@
 import { type Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { type AuthRequest } from '../middlewares/auth.middleware.js';
+import { type AuthRequest } from '../types/index.js';
+import * as historyService from '../services/index.js';
 
 const prisma = new PrismaClient();
 
@@ -11,15 +12,8 @@ export const saveSearch = async (req: AuthRequest, res: Response): Promise<any> 
 
         const { latitude, longitude, radius, poiType } = req.body;
 
-        const newSearch = await prisma.searchHistory.create({
-            data: {
-                userId,
-                latitude,
-                longitude,
-                radius,
-                poiType
-            }
-        });
+        const newSearch = await historyService.createSearchRecord(userId, latitude, longitude, radius, poiType);
+
         res.status(201).json({ message: 'Search saved successfully', search: newSearch });
     } catch (error) {
         console.error('Save search error: ', error);

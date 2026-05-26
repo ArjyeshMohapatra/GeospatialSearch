@@ -1,219 +1,64 @@
-import { type Request, type Response } from "express";
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
+import { type Request, type Response } from 'express';
+import * as authService from '../services/index.js';
 
-const prisma = new PrismaClient();
+const setRefreshCookie = (res: Response, token: string) => {
+    res.cookie('refreshToken', token, {
+        httpOnly: true,  
+        // secure: process.env.NODE_ENV === 'production', 
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000 
+    });
+};
 
-const accessSecret = process.env["JWT_ACCESS_SECRET"];
-const refreshSecret = process.env["JWT_REFRESH_SECRET"];
-
-if (!accessSecret || !refreshSecret) {
-    throw new Error("JWT secrets are missing");
-}
-
-export const signup = async (req: Request, res: Response): Promise<void> => {
+export const signup = async (req: Request, res: Response): Promise<any> => {
     try {
         const { email, password } = req.body;
-
-        const existingUser = await prisma.user.findUnique({
-            where: { email }
-        });
-
-        if (existingUser) {
-            res.status(400).json({ error: 'User already exists' });
-            return;
-        }
-
-        const passwordHash = await bcrypt.hash(password, 10);
-
-        const newUser = await prisma.user.create({
-            data: { email, passwordHash }
-        });
-
-        const accessToken = jwt.sign(
-            { userId: newUser.id },
-            accessSecret,
-            { expiresIn: '20m' }
-        );
-
-        const refreshToken = jwt.sign(
-            { userId: newUser.id },
-            refreshSecret,
-            { expiresIn: '7d' }
-        );
-
-        await prisma.user.update({
-            where: { id: newUser.id },
-            data: { refreshToken }
-        });
-
-        res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            // secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
-
-        res.status(201).json({
-            message: 'User created successfully',
-            accessToken
-        });
-
-    } catch (error) {
-        console.error('Signup Error:', error);
+        const { accessToken, refreshToken } = await authService.registerUser(email, password);
+        
+        setRefreshCookie(res, refreshToken);
+        res.status(201).json({ message: 'User created', accessToken });
+    } catch (error: any) {
+        if (error.message === 'USER_EXISTS') return res.status(400).json({ error: 'User already exists' });
         res.status(500).json({ error: 'Internal server error' });
     }
 };
 
-export const signin = async (req: Request, res: Response): Promise<void> => {
+export const signin = async (req: Request, res: Response): Promise<any> => {
     try {
         const { email, password } = req.body;
-
-        const user = await prisma.user.findUnique({
-            where: { email }
-        });
-
-        if (!user) {
-            res.status(401).json({ error: 'Invalid credentials' });
-            return;
-        }
-
-        const isPasswordValid = await bcrypt.compare(
-            password,
-            user.passwordHash
-        );
-
-        if (!isPasswordValid) {
-            res.status(401).json({ error: 'Invalid credentials' });
-            return;
-        }
-
-        const accessToken = jwt.sign(
-            { userId: user.id },
-            accessSecret,
-            { expiresIn: '20m' }
-        );
-
-        const refreshToken = jwt.sign(
-            { userId: user.id },
-            refreshSecret,
-            { expiresIn: '7d' }
-        );
-
-        await prisma.user.update({
-            where: { id: user.id },
-            data: { refreshToken }
-        });
-
-        res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            // secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
-
-        res.status(200).json({
-            message: 'Signed in successfully',
-            accessToken
-        });
-
-    } catch (error) {
-        console.error('Signin Error:', error);
+        const { accessToken, refreshToken } = await authService.authenticateUser(email, password);
+        
+        setRefreshCookie(res, refreshToken);
+        res.status(200).json({ message: 'Signed in', accessToken });
+    } catch (error: any) {
+        if (error.message === 'INVALID_CREDENTIALS') return res.status(401).json({ error: 'Invalid credentials' });
         res.status(500).json({ error: 'Internal server error' });
     }
 };
 
-export const refresh = async (req: Request, res: Response): Promise<void> => {
+export const refresh = async (req: Request, res: Response): Promise<any> => {
     try {
         const { refreshToken } = req.cookies;
+        if (!refreshToken) return res.status(401).json({ error: 'No refresh token' });
 
-        if (!refreshToken) {
-            res.status(401).json({
-                error: 'No refresh token provided'
-            });
-            return;
-        }
-
-        const decoded = jwt.verify(
-            refreshToken,
-            refreshSecret
-        ) as { userId: string };
-
-        const user = await prisma.user.findUnique({
-            where: { id: decoded.userId }
-        });
-
-        if (!user || user.refreshToken !== refreshToken) {
-            res.status(403).json({
-                error: 'Invalid refresh token'
-            });
-            return;
-        }
-
-        const newAccessToken = jwt.sign(
-            { userId: user.id },
-            accessSecret,
-            { expiresIn: '20m' }
-        );
-
-        const newRefreshToken = jwt.sign(
-            { userId: user.id },
-            refreshSecret,
-            { expiresIn: '7d' }
-        );
-
-        await prisma.user.update({
-            where: { id: user.id },
-            data: { refreshToken: newRefreshToken }
-        });
-
-        res.cookie('refreshToken', newRefreshToken, {
-            httpOnly: true,
-            // secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
-
-        res.status(200).json({
-            accessToken: newAccessToken
-        });
-
+        const { accessToken, refreshToken: newRefreshToken } = await authService.rotateTokens(refreshToken);
+        
+        setRefreshCookie(res, newRefreshToken);
+        res.status(200).json({ accessToken });
     } catch (error) {
         res.clearCookie('refreshToken');
-
-        res.status(403).json({
-            error: 'Session expired. Please log in again.'
-        });
+        return res.status(403).json({ error: 'Session expired. Please log in again.' });
     }
 };
 
-export const logout = async (req: Request, res: Response): Promise<void> => {
+export const logout = async (req: Request, res: Response): Promise<any> => {
     try {
         const { refreshToken } = req.cookies;
-
-        if (refreshToken) {
-
-            const decoded = jwt.decode(
-                refreshToken
-            ) as { userId: string } | null;
-
-            if (decoded?.userId) {
-                await prisma.user.update({
-                    where: { id: decoded.userId },
-                    data: { refreshToken: null }
-                });
-            }
-        }
-
+        if (refreshToken) await authService.revokeToken(refreshToken);
     } catch (error) {
         console.error('Logout error');
     } finally {
         res.clearCookie('refreshToken');
-
-        res.status(200).json({
-            message: 'Logged out successfully'
-        });
+        res.status(200).json({ message: 'Logged out' });
     }
 };
