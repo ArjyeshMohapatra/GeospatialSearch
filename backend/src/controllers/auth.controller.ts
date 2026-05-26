@@ -15,8 +15,7 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
         const { email, password } = req.body;
         const { accessToken, refreshToken } = await authService.registerUser(email, password);
         
-        setRefreshCookie(res, refreshToken);
-        res.status(201).json({ message: 'User created', accessToken });
+        res.status(201).json({ message: 'User created successfully. Please sign in.' });
     } catch (error: any) {
         if (error.message === 'USER_EXISTS') return res.status(400).json({ error: 'User already exists' });
         res.status(500).json({ error: 'Internal server error' });

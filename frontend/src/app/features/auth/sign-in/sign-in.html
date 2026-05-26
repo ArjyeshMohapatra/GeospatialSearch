@@ -1,0 +1,43 @@
+<app-auth-layout [title]="'Welcome to Geospatial Search'">
+
+    @if (errorMessage) {
+    <div class="alert alert-danger py-2" role="alert">
+        {{ errorMessage }}
+    </div>
+    }
+
+    <form [formGroup]="signInForm" (ngSubmit)="onSubmit()">
+
+        <div class="mb-3">
+            <label for="email" class="form-label text-secondary small fw-medium">
+                Email
+            </label>
+
+            <input id="email" type="email" formControlName="email" class="form-control form-control-lg"
+                placeholder="email" required>
+        </div>
+
+        <div class="mb-4">
+            <label for="password" class="form-label text-secondary small fw-medium">
+                Password
+            </label>
+
+            <input id="password" type="password" formControlName="password" class="form-control form-control-lg"
+                placeholder="password" required>
+        </div>
+
+        <div class="d-grid mb-4">
+            <button type="submit" [disabled]="signInForm.invalid" class="btn btn-primary btn-lg">
+                Sign in
+            </button>
+        </div>
+
+        <div class="text-center mt-3">
+            <a routerLink="/signup" class="text-decoration-none small">
+                Create a new account?
+            </a>
+        </div>
+
+    </form>
+
+</app-auth-layout>

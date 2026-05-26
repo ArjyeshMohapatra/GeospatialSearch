@@ -9,6 +9,7 @@ yarn-error.log
 .env
 .env.*
 !.env.example
+frontend/src/environments/environment*.ts
 
 # Compiled output
 dist/

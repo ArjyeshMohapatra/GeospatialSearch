@@ -1,0 +1,91 @@
+{
+  "hash": "76f4332b",
+  "configHash": "ec211a74",
+  "lockfileHash": "c14c715c",
+  "browserHash": "a81b99c2",
+  "optimized": {
+    "@angular/common": {
+      "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
+      "file": "@angular_common.js",
+      "fileHash": "d7711aa5",
+      "needsInterop": false
+    },
+    "@angular/common/http": {
+      "src": "../../../../../../node_modules/@angular/common/fesm2022/http.mjs",
+      "file": "@angular_common_http.js",
+      "fileHash": "b20ff746",
+      "needsInterop": false
+    },
+    "@angular/core": {
+      "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "5f3a019d",
+      "needsInterop": false
+    },
+    "@angular/forms": {
+      "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
+      "file": "@angular_forms.js",
+      "fileHash": "1fa396dd",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "25c1cbdd",
+      "needsInterop": false
+    },
+    "@angular/router": {
+      "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
+      "file": "@angular_router.js",
+      "fileHash": "5a8d1685",
+      "needsInterop": false
+    },
+    "rxjs": {
+      "src": "../../../../../../node_modules/rxjs/dist/esm5/index.js",
+      "file": "rxjs.js",
+      "fileHash": "2bd5aa3e",
+      "needsInterop": false
+    },
+    "olamaps-web-sdk": {
+      "src": "../../../../../../node_modules/olamaps-web-sdk/dist/index.js",
+      "file": "olamaps-web-sdk.js",
+      "fileHash": "7abbd924",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "maplibre-gl-BIFSxk4Y-P6PT3FZ5": {
+      "file": "maplibre-gl-BIFSxk4Y-P6PT3FZ5.js"
+    },
+    "OlaMaps-C83wz36C-7P5YDU35": {
+      "file": "OlaMaps-C83wz36C-7P5YDU35.js"
+    },
+    "chunk-QXSQH4KA": {
+      "file": "chunk-QXSQH4KA.js"
+    },
+    "chunk-4544POIT": {
+      "file": "chunk-4544POIT.js"
+    },
+    "chunk-D5FASJ4J": {
+      "file": "chunk-D5FASJ4J.js"
+    },
+    "chunk-VQFUCHLA": {
+      "file": "chunk-VQFUCHLA.js"
+    },
+    "chunk-IYAOUYQS": {
+      "file": "chunk-IYAOUYQS.js"
+    },
+    "chunk-FKBYTAV7": {
+      "file": "chunk-FKBYTAV7.js"
+    },
+    "chunk-273ZE7P4": {
+      "file": "chunk-273ZE7P4.js"
+    },
+    "chunk-RSS3ODKE": {
+      "file": "chunk-RSS3ODKE.js"
+    },
+    "chunk-GOMI4DH3": {
+      "file": "chunk-GOMI4DH3.js"
+    }
+  }
+}
