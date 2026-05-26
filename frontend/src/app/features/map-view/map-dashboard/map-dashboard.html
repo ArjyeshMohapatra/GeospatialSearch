@@ -1,35 +1,43 @@
-<div class="position-relative vh-100 vw-100 overflow-hidden">
+<div class="gm-map-shell position-relative overflow-hidden">
+    <div id="ola-map" class="gm-map"></div>
 
-    <div id="ola-map" class="w-100 h-100"></div>
-
-    <div class="position-absolute top-0 start-0 m-4 shadow-lg bg-white rounded p-3"
-        style="width: 350px; z-index: 1000;">
-        <h5 class="mb-3">Search Area</h5>
+    <div class="gm-panel position-absolute top-0 start-0">
+        <div class="gm-panel-header">
+            <div class="gm-panel-icon">
+                <svg class="gm-panel-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10Z"></path>
+                    <circle cx="12" cy="11" r="2.5"></circle>
+                </svg>
+            </div>
+            <div>
+                <p class="gm-panel-title">Search this area</p>
+                <p class="gm-panel-subtitle">Drop a pin to set the center</p>
+            </div>
+        </div>
 
         <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
-
             <div class="mb-3">
-                <label for="poiType" class="form-label fw-bold mb-1">What are you looking for?</label>
+                <label for="poiType" class="form-label gm-label mb-1">What are you looking for?</label>
                 <input type="text" class="form-control" id="poiType" formControlName="poiType"
-                    placeholder="e.g., Coffee, ATM, Skate Park...">
+                    placeholder="Coffee, ATM, skate park">
             </div>
 
             <div class="mb-4">
-                <label for="radius" class="form-label text-muted small mb-1">
-                    Search Radius: {{ searchForm.get('radius')?.value }} meters
+                <label for="radius" class="form-label gm-range-label mb-1">
+                    Search radius: {{ searchForm.get('radius')?.value }} meters
                 </label>
                 <input type="range" class="form-range" id="radius" min="500" max="5000" step="100"
                     formControlName="radius">
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 mb-2" [disabled]="searchForm.invalid">
-                Search Area
+            <button type="submit" class="btn btn-primary w-100 mb-2 gm-primary" [disabled]="searchForm.invalid">
+                Search area
             </button>
 
-            <button type="button" class="btn btn-outline-danger w-100 btn-sm mt-2" (click)="authService.logout()">
+            <button type="button" class="btn btn-light w-100 btn-sm gm-ghost" (click)="authService.logout()">
                 Logout
             </button>
-
         </form>
     </div>
-    </div>
+</div>
