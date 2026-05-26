@@ -6,6 +6,11 @@ export interface AuthRequest extends Request {
     userId?: string;
 }
 
+const secret = process.env["JWT_ACCESS_SECRET"];
+if (!secret) {
+    throw new Error('JWT_ACCESS_SECRET NOT DEFINED');
+}
+
 export const requireAuth = (req: AuthRequest, res: Response, next: NextFunction): any => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -19,11 +24,6 @@ export const requireAuth = (req: AuthRequest, res: Response, next: NextFunction)
     }
 
     try {
-        // 2. Verify the token using your secret key
-        const secret = process.env["JWT_ACCESS_SECRET"];
-        if (!secret) {
-            throw new Error('JWT_ACCESS_SECRET NOT DEFINED');
-        }
         const decoded = jwt.verify(token, secret) as JwtPayload;
         
         // 3. Attach the userId to the request so the next function can use it!
